@@ -1,6 +1,6 @@
 import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -27,5 +27,11 @@ btn.addEventListener("click", () => {
     header.innerText = "PRZESYŁAM!";
     uploadBytes(imageRef, file).then(() => {
         header.innerText = "PRZESŁANO!";
+        
+        getDownloadURL(imageRef).then(url => {
+            const img = document.createElement("img");
+            img.src = url;
+            document.body.appendChild(img);
+        })
     })
 })
