@@ -17,12 +17,15 @@ const storage = getStorage(app);
 
 const btn = document.getElementById("mySend");
 const input = document.getElementById("myFile");
+const header = document.getElementById("status");
 
 btn.addEventListener("click", () => {
+    
     const file = input.files[0];
-    const imageRef = ref(storage, "image.jpg");
-
+    const imageRef = ref(storage, file.name);
+    
+    header.innerText = "PRZESYŁAM!";
     uploadBytes(imageRef, file).then(() => {
-        console.log("SUKCES");
+        header.innerText = "PRZESŁANO!";
     })
 })
