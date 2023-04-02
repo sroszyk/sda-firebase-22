@@ -54,11 +54,23 @@ const storage = getStorage(app);
 
 const list = document.getElementById("list");
 const storageRef = ref(storage);
+const image = document.getElementById("image");
 
 listAll(storageRef).then(res => {
     res.items.forEach(item => {
         const listItem = document.createElement("li");
+        const button = document.createElement("button");
+
+        button.innerText = "Show";
         listItem.innerText = item.fullPath;
+
+        button.addEventListener("click", () => {
+            getDownloadURL(item).then(url => {
+                image.src = url;
+            })
+        });
+
+        listItem.appendChild(button);
         list.appendChild(listItem);
     })
 })
