@@ -1,6 +1,6 @@
 import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -36,18 +36,29 @@ const storage = getStorage(app);
 //     })
 // })
 
-const searchBtn = document.getElementById("searchBtn");
-const filenameInput = document.getElementById("filename");
-const img = document.getElementById("imageView");
-const messageHeader = document.getElementById("message");
+// const searchBtn = document.getElementById("searchBtn");
+// const filenameInput = document.getElementById("filename");
+// const img = document.getElementById("imageView");
+// const messageHeader = document.getElementById("message");
 
-searchBtn.addEventListener("click", () => {
-    const imageRef = ref(storage, filenameInput.value);
+// searchBtn.addEventListener("click", () => {
+//     const imageRef = ref(storage, filenameInput.value);
 
-    getDownloadURL(imageRef).then((url) => {
-        img.src = url;
-        messageHeader.innerText = "";
-    }).catch(() => {
-        messageHeader.innerText = "Nie ma takiego pliku!";
+//     getDownloadURL(imageRef).then((url) => {
+//         img.src = url;
+//         messageHeader.innerText = "";
+//     }).catch(() => {
+//         messageHeader.innerText = "Nie ma takiego pliku!";
+//     })
+// })
+
+const list = document.getElementById("list");
+const storageRef = ref(storage);
+
+listAll(storageRef).then(res => {
+    res.items.forEach(item => {
+        const listItem = document.createElement("li");
+        listItem.innerText = item.fullPath;
+        list.appendChild(listItem);
     })
 })
