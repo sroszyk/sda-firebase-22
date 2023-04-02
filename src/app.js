@@ -39,13 +39,15 @@ const storage = getStorage(app);
 const searchBtn = document.getElementById("searchBtn");
 const filenameInput = document.getElementById("filename");
 const img = document.getElementById("imageView");
+const messageHeader = document.getElementById("message");
 
 searchBtn.addEventListener("click", () => {
     const imageRef = ref(storage, filenameInput.value);
 
     getDownloadURL(imageRef).then((url) => {
         img.src = url;
+        messageHeader.innerText = "";
     }).catch(() => {
-        console.log("NIE MA TAKIEGO PLIKU");
+        messageHeader.innerText = "Nie ma takiego pliku!";
     })
 })
