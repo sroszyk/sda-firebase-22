@@ -52,25 +52,47 @@ const storage = getStorage(app);
 //     })
 // })
 
-const list = document.getElementById("list");
-const storageRef = ref(storage);
-const image = document.getElementById("image");
+// const list = document.getElementById("list");
+// const storageRef = ref(storage);
+// const image = document.getElementById("image");
 
+// listAll(storageRef).then(res => {
+//     res.items.forEach(item => {
+//         const listItem = document.createElement("li");
+//         const button = document.createElement("button");
+
+//         button.innerText = "Show";
+//         listItem.innerText = item.fullPath;
+
+//         button.addEventListener("click", () => {
+//             getDownloadURL(item).then(url => {
+//                 image.src = url;
+//             })
+//         });
+
+//         listItem.appendChild(button);
+//         list.appendChild(listItem);
+//     })
+// })
+
+const storageRef = ref(storage);
 listAll(storageRef).then(res => {
     res.items.forEach(item => {
-        const listItem = document.createElement("li");
-        const button = document.createElement("button");
+        getDownloadURL(item).then(url => {
+            const card = document.createElement("div");
+            card.classList.add("card");
 
-        button.innerText = "Show";
-        listItem.innerText = item.fullPath;
+            const img = document.createElement("img");
+            card.appendChild(img);
 
-        button.addEventListener("click", () => {
-            getDownloadURL(item).then(url => {
-                image.src = url;
-            })
-        });
+            const text = document.createElement("div");
+            text.classList.add("text");
+            card.appendChild(text);
 
-        listItem.appendChild(button);
-        list.appendChild(listItem);
+            img.src = url;
+            text.innerText = item.fullPath;
+
+            document.body.appendChild(card);
+        })
     })
 })
