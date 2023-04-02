@@ -75,24 +75,68 @@ const storage = getStorage(app);
 //     })
 // })
 
+// const storageRef = ref(storage);
+// listAll(storageRef).then(res => {
+//     res.items.forEach(item => {
+//         getDownloadURL(item).then(url => {
+//             const card = document.createElement("div");
+//             card.classList.add("card");
+
+//             const img = document.createElement("img");
+//             card.appendChild(img);
+
+//             const text = document.createElement("div");
+//             text.classList.add("text");
+//             card.appendChild(text);
+
+//             img.src = url;
+//             text.innerText = item.fullPath;
+
+//             document.body.appendChild(card);
+//         })
+//     })
+// })
+
+const albums = document.getElementById("albums");
+const sendBtn = document.getElementById("sendPhoto");
+const fileInput = document.getElementById("file");
+const container = document.getElementById("container");
+
+sendBtn.addEventListener("click", () => {
+    if (albums.value) {
+        const file = fileInput.files[0];
+        const imageRef = ref(storage, `${albums.value}/${file.name}`);
+        uploadBytes(imageRef, file).then(() => {
+            fileInput.value = "";
+            console.log("WYSLANO!");
+        })
+    }
+})
+
 const storageRef = ref(storage);
 listAll(storageRef).then(res => {
-    res.items.forEach(item => {
-        getDownloadURL(item).then(url => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-
-            const img = document.createElement("img");
-            card.appendChild(img);
-
-            const text = document.createElement("div");
-            text.classList.add("text");
-            card.appendChild(text);
-
-            img.src = url;
-            text.innerText = item.fullPath;
-
-            document.body.appendChild(card);
-        })
+    res.prefixes.forEach(prefix => {
+        const option = document.createElement("option");
+        option.innerText = prefix.fullPath;
+        albums.appendChild(option);
     })
+})
+
+albums.addEventListener("change", () => {
+    if (albums.value) {
+        const folderRef = ref(storage, albums.value);
+
+        listAll(folderRef).then(res => {
+            container.innerHTML = "";
+
+            res.items.forEach(item => {
+                getDownloadURL(item).then((url) => {
+                    const img = document.createElement("img");
+                    img.src = url;
+                    img.style.width = "100px"
+                    container.appendChild(img);
+                })
+            })
+        })
+    }
 })
