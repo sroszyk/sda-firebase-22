@@ -15,23 +15,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-const btn = document.getElementById("mySend");
-const input = document.getElementById("myFile");
-const header = document.getElementById("status");
-const fileNameInput = document.getElementById("filename");
+// const btn = document.getElementById("mySend");
+// const input = document.getElementById("myFile");
+// const header = document.getElementById("status");
+// const fileNameInput = document.getElementById("filename");
 
-btn.addEventListener("click", () => {    
-    const file = input.files[0];
-    const imageRef = ref(storage, fileNameInput.value);
-    
-    header.innerText = "PRZESYŁAM!";
-    uploadBytes(imageRef, file).then(() => {
-        header.innerText = "PRZESŁANO!";
-        
-        getDownloadURL(imageRef).then(url => {
-            const img = document.createElement("img");
-            img.src = url;
-            document.body.appendChild(img);
-        })
+// btn.addEventListener("click", () => {    
+//     const file = input.files[0];
+//     const imageRef = ref(storage, fileNameInput.value);
+
+//     header.innerText = "PRZESYŁAM!";
+//     uploadBytes(imageRef, file).then(() => {
+//         header.innerText = "PRZESŁANO!";
+
+//         getDownloadURL(imageRef).then(url => {
+//             const img = document.createElement("img");
+//             img.src = url;
+//             document.body.appendChild(img);
+//         })
+//     })
+// })
+
+const searchBtn = document.getElementById("searchBtn");
+const filenameInput = document.getElementById("filename");
+const img = document.getElementById("imageView");
+
+searchBtn.addEventListener("click", () => {
+    const imageRef = ref(storage, filenameInput.value);
+
+    getDownloadURL(imageRef).then((url) => {
+        img.src = url;
+    }).catch(() => {
+        console.log("NIE MA TAKIEGO PLIKU");
     })
 })
