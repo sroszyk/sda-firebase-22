@@ -1,6 +1,6 @@
 import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
-import { getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -97,46 +97,82 @@ const storage = getStorage(app);
 //     })
 // })
 
-const albums = document.getElementById("albums");
-const sendBtn = document.getElementById("sendPhoto");
-const fileInput = document.getElementById("file");
-const container = document.getElementById("container");
+// const albums = document.getElementById("albums");
+// const sendBtn = document.getElementById("sendPhoto");
+// const fileInput = document.getElementById("file");
+// const container = document.getElementById("container");
 
-sendBtn.addEventListener("click", () => {
-    if (albums.value) {
-        const file = fileInput.files[0];
-        const imageRef = ref(storage, `${albums.value}/${file.name}`);
-        uploadBytes(imageRef, file).then(() => {
-            fileInput.value = "";
-            console.log("WYSLANO!");
-        })
-    }
-})
+// sendBtn.addEventListener("click", () => {
+//     if (albums.value) {
+//         const file = fileInput.files[0];
+//         const imageRef = ref(storage, `${albums.value}/${file.name}`);
+//         uploadBytes(imageRef, file).then(() => {
+//             fileInput.value = "";
+//             console.log("WYSLANO!");
+//         })
+//     }
+// })
+
+// const storageRef = ref(storage);
+// listAll(storageRef).then(res => {
+//     res.prefixes.forEach(prefix => {
+//         const option = document.createElement("option");
+//         option.innerText = prefix.fullPath;
+//         albums.appendChild(option);
+//     })
+// })
+
+// albums.addEventListener("change", () => {
+//     if (albums.value) {
+//         const folderRef = ref(storage, albums.value);
+
+//         listAll(folderRef).then(res => {
+//             container.innerHTML = "";
+
+//             res.items.forEach(item => {
+//                 getDownloadURL(item).then((url) => {
+//                     const img = document.createElement("img");
+//                     img.src = url;
+//                     img.style.width = "100px"
+//                     container.appendChild(img);
+//                 })
+//             })
+//         })
+//     }
+// })
+
+
+const albums = document.getElementById("albums");
+const images = document.getElementById("images");
 
 const storageRef = ref(storage);
 listAll(storageRef).then(res => {
     res.prefixes.forEach(prefix => {
-        const option = document.createElement("option");
-        option.innerText = prefix.fullPath;
-        albums.appendChild(option);
-    })
-})
+        const listItem = document.createElement("li");
+        listItem.innerText = prefix.name;
 
-albums.addEventListener("change", () => {
-    if (albums.value) {
-        const folderRef = ref(storage, albums.value);
+        listItem.addEventListener("click", () => {
+            listAll(prefix).then(imgRes => {
+                images.innerHTML = "";
+                imgRes.items.forEach((item) => {
+                    const imageItem = document.createElement("li");
+                    const deleteBtn = document.createElement("button");
 
-        listAll(folderRef).then(res => {
-            container.innerHTML = "";
+                    deleteBtn.innerText = "Delete";
+                    deleteBtn.addEventListener("click", () => {
+                        deleteObject(item).then(() => {
+                            images.removeChild(imageItem);
+                        })
+                    })
 
-            res.items.forEach(item => {
-                getDownloadURL(item).then((url) => {
-                    const img = document.createElement("img");
-                    img.src = url;
-                    img.style.width = "100px"
-                    container.appendChild(img);
+                    imageItem.innerText = item.name;
+                    imageItem.appendChild(deleteBtn);
+
+                    images.appendChild(imageItem);
                 })
             })
         })
-    }
+
+        albums.appendChild(listItem);
+    })
 })

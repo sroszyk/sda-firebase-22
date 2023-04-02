@@ -11,3 +11,16 @@ body {
     display: flex;
     flex-wrap: wrap;
 } */
+
+.container {
+    display: flex;
+    justify-content: space-around;
+}
+
+#albums li {
+    height: 20px;
+}
+#albums li:hover {
+    cursor: pointer;
+    background-color: brown;
+}
