@@ -1,7 +1,7 @@
 import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
-import {collection, doc, getDoc, getDocs, getFirestore, setDoc} from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -216,16 +216,89 @@ const db = getFirestore(app);
 //         }
 //     })
 // })
-const usersOrderedList = document.getElementById("usersList");
 
-const usersColl = collection(db, "users");
-getDocs(usersColl).then((dataDocs) => {
-    dataDocs.docs.forEach(dataDoc => {
-        const data = dataDoc.data();
-        const li = document.createElement("li");
+// const usersOrderedList = document.getElementById("usersList");
+// const collectionNameSelect = document.getElementById("collectionName");
 
-        li.innerText = `${data.name} ${data.surname}`;
+// collectionNameSelect.addEventListener("change", () => {
+//     const usersColl = collection(db, collectionNameSelect.value);
+//     usersOrderedList.innerHTML = "";
 
-        usersOrderedList.appendChild(li);
+//     getDocs(usersColl).then((dataDocs) => {
+//         dataDocs.docs.forEach(dataDoc => {
+//             const data = dataDoc.data();
+//             const li = document.createElement("li");
+
+//             li.innerText = `${data.name} ${data.surname}`;
+
+//             usersOrderedList.appendChild(li);
+//         })
+//     })
+// });
+
+const nameInput = document.getElementById("name");
+const surnameInput = document.getElementById("surname");
+const addBtn = document.getElementById("add");
+const usersList = document.getElementById("users");
+const usersCollection = collection(db, "users");
+let userEditRef;
+
+function displayUsers() {
+    getDocs(usersCollection).then(docsData => {
+        usersList.innerHTML = "";
+
+        docsData.docs.forEach((docData) => {
+            const userData = docData.data();
+
+            const li = document.createElement("li");
+            const deleteBtn = document.createElement("button");
+            const editBtn = document.createElement("button");
+
+            deleteBtn.addEventListener("click", () => {
+                deleteDoc(docData.ref).then(() => {
+                    displayUsers();
+                });
+            });
+
+            editBtn.addEventListener("click", () => { 
+                nameInput.value = userData.name;
+                surnameInput.value = userData.surname;
+                userEditRef = docData.ref;
+            });
+
+            li.innerText = `${userData.name} ${userData.surname}`;
+            deleteBtn.innerText = "Delete";
+            editBtn.innerText = "Edit";
+
+            usersList.appendChild(li);
+            li.appendChild(deleteBtn);
+            li.appendChild(editBtn);
+        })
     })
-})
+}
+displayUsers();
+
+addBtn.addEventListener("click", () => {
+    if(userEditRef){
+        updateDoc(userEditRef, {
+            name: nameInput.value,
+            surname: surnameInput.value 
+        }).then(() => {
+            displayUsers();
+            nameInput.value = "";
+            surnameInput.value = "";
+            userEditRef = undefined;
+        })
+    }
+    else {
+        addDoc(usersCollection, {
+            name: nameInput.value,
+            surname: surnameInput.value
+        }).then(() => {
+            displayUsers();
+            nameInput.value = "";
+            surnameInput.value = "";
+        })
+    }
+});
+
