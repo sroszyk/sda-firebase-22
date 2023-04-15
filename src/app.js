@@ -1,7 +1,7 @@
 import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -236,69 +236,87 @@ const db = getFirestore(app);
 //     })
 // });
 
-const nameInput = document.getElementById("name");
-const surnameInput = document.getElementById("surname");
-const addBtn = document.getElementById("add");
-const usersList = document.getElementById("users");
-const usersCollection = collection(db, "users");
-let userEditRef;
+// const nameInput = document.getElementById("name");
+// const surnameInput = document.getElementById("surname");
+// const addBtn = document.getElementById("add");
+// const usersList = document.getElementById("users");
+// const usersCollection = collection(db, "users");
+// let userEditRef;
 
-function displayUsers() {
-    getDocs(usersCollection).then(docsData => {
+// function displayUsers() {
+//     getDocs(usersCollection).then(docsData => {
+//         usersList.innerHTML = "";
+
+//         docsData.docs.forEach((docData) => {
+//             const userData = docData.data();
+
+//             const li = document.createElement("li");
+//             const deleteBtn = document.createElement("button");
+//             const editBtn = document.createElement("button");
+
+//             deleteBtn.addEventListener("click", () => {
+//                 deleteDoc(docData.ref).then(() => {
+//                     displayUsers();
+//                 });
+//             });
+
+//             editBtn.addEventListener("click", () => { 
+//                 nameInput.value = userData.name;
+//                 surnameInput.value = userData.surname;
+//                 userEditRef = docData.ref;
+//             });
+
+//             li.innerText = `${userData.name} ${userData.surname}`;
+//             deleteBtn.innerText = "Delete";
+//             editBtn.innerText = "Edit";
+
+//             usersList.appendChild(li);
+//             li.appendChild(deleteBtn);
+//             li.appendChild(editBtn);
+//         })
+//     })
+// }
+// displayUsers();
+
+// addBtn.addEventListener("click", () => {
+//     if(userEditRef){
+//         updateDoc(userEditRef, {
+//             name: nameInput.value,
+//             surname: surnameInput.value 
+//         }).then(() => {
+//             displayUsers();
+//             nameInput.value = "";
+//             surnameInput.value = "";
+//             userEditRef = undefined;
+//         })
+//     }
+//     else {
+//         addDoc(usersCollection, {
+//             name: nameInput.value,
+//             surname: surnameInput.value
+//         }).then(() => {
+//             displayUsers();
+//             nameInput.value = "";
+//             surnameInput.value = "";
+//         })
+//     }
+// });
+
+const nameInput = document.getElementById("name");
+const searchBtn = document.getElementById("search");
+const usersList = document.getElementById("users");
+
+searchBtn.addEventListener("click", () => {
+    const usersColl = collection(db, "users");
+    const usersQuery = query(usersColl, where("name", "==", nameInput.value));
+
+    getDocs(usersQuery).then((docsData) => {
         usersList.innerHTML = "";
 
         docsData.docs.forEach((docData) => {
-            const userData = docData.data();
-
             const li = document.createElement("li");
-            const deleteBtn = document.createElement("button");
-            const editBtn = document.createElement("button");
-
-            deleteBtn.addEventListener("click", () => {
-                deleteDoc(docData.ref).then(() => {
-                    displayUsers();
-                });
-            });
-
-            editBtn.addEventListener("click", () => { 
-                nameInput.value = userData.name;
-                surnameInput.value = userData.surname;
-                userEditRef = docData.ref;
-            });
-
-            li.innerText = `${userData.name} ${userData.surname}`;
-            deleteBtn.innerText = "Delete";
-            editBtn.innerText = "Edit";
-
+            li.innerText = docData.id;
             usersList.appendChild(li);
-            li.appendChild(deleteBtn);
-            li.appendChild(editBtn);
         })
-    })
-}
-displayUsers();
-
-addBtn.addEventListener("click", () => {
-    if(userEditRef){
-        updateDoc(userEditRef, {
-            name: nameInput.value,
-            surname: surnameInput.value 
-        }).then(() => {
-            displayUsers();
-            nameInput.value = "";
-            surnameInput.value = "";
-            userEditRef = undefined;
-        })
-    }
-    else {
-        addDoc(usersCollection, {
-            name: nameInput.value,
-            surname: surnameInput.value
-        }).then(() => {
-            displayUsers();
-            nameInput.value = "";
-            surnameInput.value = "";
-        })
-    }
+    });
 });
-
