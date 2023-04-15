@@ -1,7 +1,7 @@
 import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
-import {doc, getFirestore, setDoc} from "firebase/firestore";
+import {collection, doc, getDoc, getDocs, getFirestore, setDoc} from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -178,21 +178,48 @@ const db = getFirestore(app);
 //         albums.appendChild(listItem);
 //     })
 // })
-const userNameInput = document.getElementById("userName");
-const userSurnameInput = document.getElementById("userSurname");
-const addUserBtn = document.getElementById("addUser");
+// const userNameInput = document.getElementById("userName");
+// const userSurnameInput = document.getElementById("userSurname");
+// const addUserBtn = document.getElementById("addUser");
+// const collectionSelect = document.getElementById("collectionName");
 
+// addUserBtn.addEventListener("click", () => {
+//     const userName = userNameInput.value;
+//     const userSurname = userSurnameInput.value;
+//     const collectionName = collectionSelect.value;
 
-addUserBtn.addEventListener("click", () => {
-    const userName = userNameInput.value;
-    const userSurname = userSurnameInput.value;
+//     const jkDoc = doc(db, collectionName, `${userName}${userSurname}`);
+//     setDoc(jkDoc, {
+//         name: userName,
+//         surname: userSurname
+//     }).then(() => {
+//         userNameInput.value = "";
+//         userSurnameInput.value = "";
+//     });  
+// })
 
-    const jkDoc = doc(db, "users", `${userName}${userSurname}`);
-    setDoc(jkDoc, {
-        name: userName,
-        surname: userSurname
-    }).then(() => {
-        userNameInput.value = "";
-        userSurnameInput.value = "";
-    });  
+// const docIdInput = document.getElementById("docId");
+// const searchBtn = document.getElementById("search");
+// const dataHeader = document.getElementById("data");
+
+// searchBtn.addEventListener("click", () => {
+//     const docId = docIdInput.value;
+
+//     const myDoc = doc(db, "users", docId);
+//     getDoc(myDoc).then(docData => {
+//         if(docData.exists()){
+//             const data = docData.data();
+//             dataHeader.innerText = `${data.name} ${data.surname}`;
+//         }
+//         else {
+//             dataHeader.innerText = "Not found";
+//         }
+//     })
+// })
+
+const usersColl = collection(db, "users");
+getDocs(usersColl).then((dataDocs) => {
+    dataDocs.docs.forEach(dataDoc => {
+        console.log(dataDoc.data())
+    })
 })
