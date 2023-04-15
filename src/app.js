@@ -1,6 +1,7 @@
 import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
+import {doc, getFirestore, setDoc} from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -14,6 +15,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
+const db = getFirestore(app);
 
 // const btn = document.getElementById("mySend");
 // const input = document.getElementById("myFile");
@@ -142,37 +144,55 @@ const storage = getStorage(app);
 // })
 
 
-const albums = document.getElementById("albums");
-const images = document.getElementById("images");
+// const albums = document.getElementById("albums");
+// const images = document.getElementById("images");
 
-const storageRef = ref(storage);
-listAll(storageRef).then(res => {
-    res.prefixes.forEach(prefix => {
-        const listItem = document.createElement("li");
-        listItem.innerText = prefix.name;
+// const storageRef = ref(storage);
+// listAll(storageRef).then(res => {
+//     res.prefixes.forEach(prefix => {
+//         const listItem = document.createElement("li");
+//         listItem.innerText = prefix.name;
 
-        listItem.addEventListener("click", () => {
-            listAll(prefix).then(imgRes => {
-                images.innerHTML = "";
-                imgRes.items.forEach((item) => {
-                    const imageItem = document.createElement("li");
-                    const deleteBtn = document.createElement("button");
+//         listItem.addEventListener("click", () => {
+//             listAll(prefix).then(imgRes => {
+//                 images.innerHTML = "";
+//                 imgRes.items.forEach((item) => {
+//                     const imageItem = document.createElement("li");
+//                     const deleteBtn = document.createElement("button");
 
-                    deleteBtn.innerText = "Delete";
-                    deleteBtn.addEventListener("click", () => {
-                        deleteObject(item).then(() => {
-                            images.removeChild(imageItem);
-                        })
-                    })
+//                     deleteBtn.innerText = "Delete";
+//                     deleteBtn.addEventListener("click", () => {
+//                         deleteObject(item).then(() => {
+//                             images.removeChild(imageItem);
+//                         })
+//                     })
 
-                    imageItem.innerText = item.name;
-                    imageItem.appendChild(deleteBtn);
+//                     imageItem.innerText = item.name;
+//                     imageItem.appendChild(deleteBtn);
 
-                    images.appendChild(imageItem);
-                })
-            })
-        })
+//                     images.appendChild(imageItem);
+//                 })
+//             })
+//         })
 
-        albums.appendChild(listItem);
-    })
+//         albums.appendChild(listItem);
+//     })
+// })
+const userNameInput = document.getElementById("userName");
+const userSurnameInput = document.getElementById("userSurname");
+const addUserBtn = document.getElementById("addUser");
+
+
+addUserBtn.addEventListener("click", () => {
+    const userName = userNameInput.value;
+    const userSurname = userSurnameInput.value;
+
+    const jkDoc = doc(db, "users", `${userName}${userSurname}`);
+    setDoc(jkDoc, {
+        name: userName,
+        surname: userSurname
+    }).then(() => {
+        userNameInput.value = "";
+        userSurnameInput.value = "";
+    });  
 })
