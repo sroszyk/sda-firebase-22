@@ -216,10 +216,16 @@ const db = getFirestore(app);
 //         }
 //     })
 // })
+const usersOrderedList = document.getElementById("usersList");
 
 const usersColl = collection(db, "users");
 getDocs(usersColl).then((dataDocs) => {
     dataDocs.docs.forEach(dataDoc => {
-        console.log(dataDoc.data())
+        const data = dataDoc.data();
+        const li = document.createElement("li");
+
+        li.innerText = `${data.name} ${data.surname}`;
+
+        usersOrderedList.appendChild(li);
     })
 })
