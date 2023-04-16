@@ -2,7 +2,7 @@ import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
-import { getDatabase, ref as refdb, set } from "firebase/database";
+import { getDatabase, onChildAdded, onValue, ref as refdb, set } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -335,21 +335,64 @@ const rdb = getDatabase(app);
 //     console.log(doc.data());
 // })
 
-const nameInput = document.getElementById("name");
-const surnameInput = document.getElementById("surname");
-const addBtn = document.getElementById("add");
+// const nameInput = document.getElementById("name");
+// const surnameInput = document.getElementById("surname");
+// const addBtn = document.getElementById("add");
+// const usersList = document.getElementById("users");
 
-addBtn.addEventListener("click", () => {
-    const name = nameInput.value;
-    const surname = surnameInput.value;
+// addBtn.addEventListener("click", () => {
+//     const name = nameInput.value;
+//     const surname = surnameInput.value;
 
-    const userRef = refdb(rdb, `users/${name}${surname}`);
+//     const userRef = refdb(rdb, `users/${name}${surname}`);
     
-    set(userRef, {
-        name: name,
-        surname: surname
-    }).then(() => {
-        nameInput.value = "";
-        surnameInput.value = "";
-    });
-})
+//     set(userRef, {
+//         name: name,
+//         surname: surname
+//     }).then(() => {
+//         nameInput.value = "";
+//         surnameInput.value = "";
+//     });
+// })
+
+
+// const usersRef = refdb(rdb, "users");
+// // onValue(usersRef, (snapshot) => {
+// //     usersList.innerHTML = "";
+// //     snapshot.forEach((userSnapshot) => {
+// //         const user = userSnapshot.val();
+
+// //         const li = document.createElement("li");
+// //         li.innerText = `${user.name} ${user.surname}`;
+
+// //         usersList.appendChild(li);
+// //     })
+// // })
+
+// onChildAdded(usersRef, (snapshot) => {
+//     const user = snapshot.val();
+
+//     const li = document.createElement("li");
+//     li.innerText = `${user.name} ${user.surname}`;
+
+//     usersList.appendChild(li);
+// })
+
+
+const userSelect = document.getElementById("user");
+const messageTextArea = document.getElementById("message");
+const sendBtn = document.getElementById("send");
+
+sendBtn.addEventListener("click", () => {
+    console.log(userSelect.value);
+});
+
+const usersRef = refdb(rdb, "users");
+onChildAdded(usersRef, (snapshot) => {
+    const user = snapshot.val();
+
+    const option = document.createElement("option");
+    option.innerText = `${user.name} ${user.surname}`;
+
+    userSelect.appendChild(option);
+});
