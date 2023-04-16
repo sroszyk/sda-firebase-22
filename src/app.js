@@ -2,7 +2,7 @@ import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
-import { getDatabase, onChildAdded, onValue, ref as refdb, set } from "firebase/database";
+import { getDatabase, onChildAdded, onValue, push, ref as refdb, set } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -12,7 +12,7 @@ const firebaseConfig = {
     storageBucket: "sda-firebase-fron22.appspot.com",
     messagingSenderId: "20519627447",
     appId: "1:20519627447:web:36d0217ba0b8ff1186bb32"
-  };
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -345,7 +345,7 @@ const rdb = getDatabase(app);
 //     const surname = surnameInput.value;
 
 //     const userRef = refdb(rdb, `users/${name}${surname}`);
-    
+
 //     set(userRef, {
 //         name: name,
 //         surname: surname
@@ -383,8 +383,25 @@ const userSelect = document.getElementById("user");
 const messageTextArea = document.getElementById("message");
 const sendBtn = document.getElementById("send");
 
+const messagesRef = refdb(rdb, "messages");
 sendBtn.addEventListener("click", () => {
-    console.log(userSelect.value);
+    const messageRef = push(messagesRef);
+
+    set(messageRef, {
+        user: userSelect.value,
+        text: messageTextArea.value
+    }).then(() => {
+        messageTextArea.value = "";
+    });
+});
+
+onChildAdded(messagesRef, (snapshot) => {
+    const message = snapshot.val();
+
+    const messageDiv = document.createElement("div");
+    messageDiv.innerText = `${message.user} -- ${message.text}`;
+
+    document.body.appendChild(messageDiv);
 });
 
 const usersRef = refdb(rdb, "users");
