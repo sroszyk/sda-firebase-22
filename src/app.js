@@ -3,6 +3,8 @@ import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { getDatabase, onChildAdded, onChildRemoved, onValue, push, ref as refdb, remove, set } from "firebase/database";
+import { getAuth, EmailAuthProvider, onAuthStateChanged, signOut, GoogleAuthProvider } from "firebase/auth";
+import * as firebaseui from 'firebaseui';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -19,7 +21,9 @@ const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 const db = getFirestore(app);
 const rdb = getDatabase(app);
+const auth = getAuth(app);
 
+const ui = new firebaseui.auth.AuthUI(auth);
 // const btn = document.getElementById("mySend");
 // const input = document.getElementById("myFile");
 // const header = document.getElementById("status");
@@ -426,4 +430,28 @@ onChildAdded(usersRef, (snapshot) => {
     option.innerText = `${user.name} ${user.surname}`;
 
     userSelect.appendChild(option);
+});
+
+ui.start('#firebaseui-auth-container', {
+    signInOptions: [
+        EmailAuthProvider.PROVIDER_ID,
+        GoogleAuthProvider.PROVIDER_ID
+    ],
+    signInSuccessUrl: "http://localhost:8080/"
+});
+
+const logoutBtn = document.getElementById("logout");
+onAuthStateChanged(auth, (user) => {
+    if(user){
+        console.log(user);
+        logoutBtn.style.display = "block";
+    }
+    else {
+        logoutBtn.style.display = "none";
+        console.log("WYLOGOWANY!");
+    }
+})
+
+logoutBtn.addEventListener("click", ()=>{
+    signOut(auth);
 });
