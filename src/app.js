@@ -2,7 +2,7 @@ import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
-import { getDatabase, onChildAdded, onValue, push, ref as refdb, set } from "firebase/database";
+import { getDatabase, onChildAdded, onChildRemoved, onValue, push, ref as refdb, remove, set } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
@@ -398,11 +398,25 @@ sendBtn.addEventListener("click", () => {
 onChildAdded(messagesRef, (snapshot) => {
     const message = snapshot.val();
 
+    const deleteBtn = document.createElement("button");
     const messageDiv = document.createElement("div");
-    messageDiv.innerText = `${message.user} -- ${message.text}`;
 
+    messageDiv.id = snapshot.key;
+    messageDiv.innerText = `${message.user} -- ${message.text}`;
+    deleteBtn.innerText = "Delete";
+
+    deleteBtn.addEventListener("click", () => {
+        remove(snapshot.ref);
+    });
+
+    messageDiv.appendChild(deleteBtn);
     document.body.appendChild(messageDiv);
 });
+
+onChildRemoved(messagesRef, (snapshot) => {
+    const elToRemove = document.getElementById(snapshot.key);
+    document.body.removeChild(elToRemove);
+})
 
 const usersRef = refdb(rdb, "users");
 onChildAdded(usersRef, (snapshot) => {
