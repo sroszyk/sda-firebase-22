@@ -1,21 +1,24 @@
 import './../styles/styles.css'
 import { initializeApp } from "firebase/app";
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { getDatabase, ref as refdb, set } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAHyc5q5YaEgn6Z0rNU-WLFtdjxR7A_x6M",
     authDomain: "sda-firebase-fron22.firebaseapp.com",
+    databaseURL: "https://sda-firebase-fron22-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "sda-firebase-fron22",
     storageBucket: "sda-firebase-fron22.appspot.com",
     messagingSenderId: "20519627447",
     appId: "1:20519627447:web:36d0217ba0b8ff1186bb32"
-};
+  };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 const db = getFirestore(app);
+const rdb = getDatabase(app);
 
 // const btn = document.getElementById("mySend");
 // const input = document.getElementById("myFile");
@@ -302,21 +305,51 @@ const db = getFirestore(app);
 //     }
 // });
 
+// const nameInput = document.getElementById("name");
+// const searchBtn = document.getElementById("search");
+// const usersList = document.getElementById("users");
+
+// searchBtn.addEventListener("click", () => {
+//     const usersColl = collection(db, "users");
+//     const usersQuery = query(usersColl, where("name", "==", nameInput.value));
+
+//     getDocs(usersQuery).then((docsData) => {
+//         usersList.innerHTML = "";
+
+//         docsData.docs.forEach((docData) => {
+//             const li = document.createElement("li");
+//             li.innerText = docData.id;
+//             usersList.appendChild(li);
+//         })
+//     });
+// });
+
+
+// updateDoc(testRef, {
+//     dzieci: ["Marysia"]
+// })
+
+// const aniaRef = doc(db, "users", "AniaDuda");
+
+// const unsub = onSnapshot(aniaRef, (doc) => {
+//     console.log(doc.data());
+// })
+
 const nameInput = document.getElementById("name");
-const searchBtn = document.getElementById("search");
-const usersList = document.getElementById("users");
+const surnameInput = document.getElementById("surname");
+const addBtn = document.getElementById("add");
 
-searchBtn.addEventListener("click", () => {
-    const usersColl = collection(db, "users");
-    const usersQuery = query(usersColl, where("name", "==", nameInput.value));
+addBtn.addEventListener("click", () => {
+    const name = nameInput.value;
+    const surname = surnameInput.value;
 
-    getDocs(usersQuery).then((docsData) => {
-        usersList.innerHTML = "";
-
-        docsData.docs.forEach((docData) => {
-            const li = document.createElement("li");
-            li.innerText = docData.id;
-            usersList.appendChild(li);
-        })
+    const userRef = refdb(rdb, `users/${name}${surname}`);
+    
+    set(userRef, {
+        name: name,
+        surname: surname
+    }).then(() => {
+        nameInput.value = "";
+        surnameInput.value = "";
     });
-});
+})
